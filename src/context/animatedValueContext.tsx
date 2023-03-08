@@ -46,6 +46,8 @@ function useSetupAnimatedValues<T>() {
     GestureState.UNDETERMINED
   );
   const touchTranslate = useSharedValue(0);
+  const rawTranslate = useSharedValue({ x: 0, y: 0 });
+  const triggerReset = useSharedValue(false);
 
   const isTouchActiveNative = useSharedValue(false);
 
@@ -94,8 +96,8 @@ function useSetupAnimatedValues<T>() {
     const innerScrollDiff = scrollOffset.value - scrollInit.value;
     // If list is nested there may be an outer scroll diff
     const outerScrollDiff = outerScrollOffset.value - outerScrollInit.value;
-    const scrollDiff = innerScrollDiff + outerScrollDiff;
-    return scrollDiff;
+
+    return innerScrollDiff + outerScrollDiff;
   }, []);
 
   const touchPositionDiff = useDerivedValue(() => {
@@ -178,6 +180,8 @@ function useSetupAnimatedValues<T>() {
       spacerIndexAnim,
       touchPositionDiff,
       touchTranslate,
+      rawTranslate,
+      triggerReset,
       autoScrollDistance,
       viewableIndexMin,
       viewableIndexMax,
@@ -201,6 +205,8 @@ function useSetupAnimatedValues<T>() {
       spacerIndexAnim,
       touchPositionDiff,
       touchTranslate,
+      rawTranslate,
+      triggerReset,
       autoScrollDistance,
       viewableIndexMin,
       viewableIndexMax,

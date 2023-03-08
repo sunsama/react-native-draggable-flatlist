@@ -16,11 +16,12 @@ import Animated, {
   runOnJS,
   useAnimatedReaction,
   useAnimatedScrollHandler,
+  useDerivedValue,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
 import CellRendererComponent from "./CellRendererComponent";
-import { DEFAULT_PROPS, isWeb } from "../constants";
+import { DEFAULT_PROPS } from "../constants";
 import PlaceholderItem from "./PlaceholderItem";
 import RowItem from "./RowItem";
 import { DraggableFlatListProps } from "../types";
@@ -71,6 +72,8 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
     horizontalAnim,
     placeholderOffset,
     touchTranslate,
+    rawTranslate,
+    triggerReset,
     autoScrollDistance,
     panGestureState,
     isTouchActiveNative,
@@ -83,6 +86,7 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
     activeIndexAnim.value = -1;
     spacerIndexAnim.value = -1;
     touchTranslate.value = 0;
+    rawTranslate.value = { x: 0, y: 0 };
     activeCellSize.value = -1;
     activeCellOffset.value = -1;
     setActiveKey(null);
@@ -246,6 +250,13 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
 
   const gestureDisabled = useSharedValue(false);
 
+  useDerivedValue(() => {
+    if (triggerReset.value) {
+      runOnJS(reset)();
+      triggerReset.value = false;
+    }
+  }, []);
+
   const panGesture = Gesture.Pan()
     .onBegin((evt) => {
       gestureDisabled.value = disabled.value;
@@ -255,10 +266,13 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
     .onUpdate((evt) => {
       if (gestureDisabled.value) return;
       panGestureState.value = evt.state;
-      const translation = horizontalAnim.value
+      touchTranslate.value = horizontalAnim.value
         ? evt.translationX
         : evt.translationY;
-      touchTranslate.value = translation;
+      rawTranslate.value = {
+        x: evt.x,
+        y: evt.y,
+      };
     })
     .onEnd((evt) => {
       if (gestureDisabled.value) return;
@@ -269,6 +283,10 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
         : evt.translationY;
 
       touchTranslate.value = translation + autoScrollDistance.value;
+      rawTranslate.value = {
+        x: evt.x,
+        y: evt.y,
+      };
       panGestureState.value = evt.state;
 
       // Only call onDragEnd if actually dragging a cell
