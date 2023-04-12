@@ -229,6 +229,10 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
     }
   );
 
+  const onPlaceholderIndexChange = useStableCallback((index: number) => {
+    props.onPlaceholderIndexChange?.(index);
+  });
+
   // Handle case where user ends drag without moving their finger.
   useAnimatedReaction(
     () => {
@@ -238,6 +242,7 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
       if (cur !== prev && !cur) {
         const hasMoved = !!touchTranslate.value;
         if (!hasMoved && activeIndexAnim.value >= 0 && !disabled.value) {
+          runOnJS(onRelease)(activeIndexAnim.value);
           runOnJS(onDragEnd)({
             from: activeIndexAnim.value,
             to: spacerIndexAnim.value,
@@ -245,7 +250,19 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
         }
       }
     },
-    [isTouchActiveNative, onDragEnd]
+    [isTouchActiveNative, onDragEnd, onRelease]
+  );
+
+  useAnimatedReaction(
+    () => {
+      return spacerIndexAnim.value;
+    },
+    (cur, prev) => {
+      if (prev !== null && cur !== prev && cur >= 0 && prev >= 0) {
+        runOnJS(onPlaceholderIndexChange)(cur);
+      }
+    },
+    [spacerIndexAnim]
   );
 
   const gestureDisabled = useSharedValue(false);
