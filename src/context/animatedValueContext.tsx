@@ -135,9 +135,10 @@ function useSetupAnimatedValues<T>() {
     );
   }, []);
 
+  const dragItemOverflow = props.dragItemOverflow;
   const hoverAnim = useDerivedValue(() => {
     if (activeIndexAnim.value < 0) return 0;
-    return props.dragItemOverflow
+    return dragItemOverflow
       ? touchPositionDiff.value
       : touchPositionDiffConstrained.value;
   }, []);
