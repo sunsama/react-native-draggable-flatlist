@@ -1,2 +1,5 @@
 # Ignore all markdown files:
 *.md
+
+# Generated build output
+lib/
