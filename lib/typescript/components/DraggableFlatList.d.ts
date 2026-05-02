@@ -42,6 +42,11 @@ declare const _default: <T>(props: Omit<FlatListProps<T>, "keyExtractor" | "data
         spacerIndexAnim: import("react-native-reanimated").SharedValue<number>;
         touchPositionDiff: Readonly<Animated.SharedValue<number>>;
         touchTranslate: import("react-native-reanimated").SharedValue<number>;
+        rawTranslate: import("react-native-reanimated").SharedValue<{
+            x: number;
+            y: number;
+        }>;
+        triggerReset: import("react-native-reanimated").SharedValue<boolean>;
         autoScrollDistance: Readonly<Animated.SharedValue<number>>;
         viewableIndexMin: import("react-native-reanimated").SharedValue<number>;
         viewableIndexMax: import("react-native-reanimated").SharedValue<number>;

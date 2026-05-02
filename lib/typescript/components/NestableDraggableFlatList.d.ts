@@ -41,6 +41,11 @@ export declare const NestableDraggableFlatList: <T>(props: Omit<import("react-na
         spacerIndexAnim: import("react-native-reanimated").SharedValue<number>;
         touchPositionDiff: Readonly<Animated.SharedValue<number>>;
         touchTranslate: import("react-native-reanimated").SharedValue<number>;
+        rawTranslate: import("react-native-reanimated").SharedValue<{
+            x: number;
+            y: number;
+        }>;
+        triggerReset: import("react-native-reanimated").SharedValue<boolean>;
         autoScrollDistance: Readonly<Animated.SharedValue<number>>;
         viewableIndexMin: import("react-native-reanimated").SharedValue<number>;
         viewableIndexMax: import("react-native-reanimated").SharedValue<number>;

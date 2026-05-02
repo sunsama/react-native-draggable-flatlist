@@ -31,6 +31,11 @@ export declare function useAnimatedValues(): {
         value: number;
     }>;
     touchTranslate: import("react-native-reanimated").SharedValue<number>;
+    rawTranslate: import("react-native-reanimated").SharedValue<{
+        x: number;
+        y: number;
+    }>;
+    triggerReset: import("react-native-reanimated").SharedValue<boolean>;
     autoScrollDistance: Readonly<{
         value: number;
     }>;
