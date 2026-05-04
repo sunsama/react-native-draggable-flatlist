@@ -34,7 +34,7 @@ function CellRendererComponent<T>(props: Props<T>) {
   const viewRef = useRef<Animated.View>(null);
   const { cellDataRef, propsRef, containerRef } = useRefs<T>();
 
-  const { horizontalAnim, scrollOffset } = useAnimatedValues();
+  const { horizontalAnim, scrollOffset, activeIndexAnim } = useAnimatedValues();
   const {
     activeKey,
     keyExtractor,
@@ -63,7 +63,17 @@ function CellRendererComponent<T>(props: Props<T>) {
     if (translate.value && !isWeb) {
       heldTanslate.value = translate.value;
     }
-    const t = activeKey ? translate.value : heldTanslate.value;
+    // If the drag is fully cancelled (e.g. via triggerReset from a long-press
+    // modal handler) the data does not reorder, so onCellLayout never fires
+    // to clear heldTanslate. Detect that case via activeIndexAnim < 0 and
+    // snap to 0 instead of holding the stale offset, which would leave the
+    // previously-active cell visually stuck.
+    const noActiveDrag = activeIndexAnim.value < 0;
+    const t = activeKey
+      ? translate.value
+      : noActiveDrag
+      ? 0
+      : heldTanslate.value;
     return {
       transform: [horizontalAnim.value ? { translateX: t } : { translateY: t }],
     };
