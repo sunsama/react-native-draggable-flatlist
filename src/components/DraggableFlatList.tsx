@@ -279,6 +279,13 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
   useDerivedValue(() => {
     if (triggerReset.value) {
       runOnJS(reset)();
+      // Halt the in-flight pan gesture so any subsequent onUpdate/onEnd
+      // events do not write back over the state we just reset. Without
+      // this, a long-press handler that opens a modal mid-drag would
+      // leave the cell stuck at a stale touchTranslate (the user is
+      // still touching the screen, so onUpdate keeps firing). The next
+      // gesture's onBegin restores gestureDisabled from disabled.value.
+      gestureDisabled.value = true;
       triggerReset.value = false;
     }
   }, []);
